@@ -74,19 +74,21 @@ The script supports following params:
     If we are able to meet the FPR metric then we find the sensitivity value with the best value for the function "TPR \* (1 - FPR)" . This will give us a TPR that is good enough while also not sacrificing the FPR too much.  
     If we are unable to meet the TPR metric as well, then we exit out.  
 ```python
-if not results.empty:
-	if best_fpr.empty:
-        # If there is no row that satisfies FPR <= des_fpr, then we return the lowest possible FPR
-        results = results.loc[(results['TPR'] == results['TPR'].iloc[-1])]
-        results = results.sort_values('FPR')
+ if not results.empty:
+        if best_fpr.empty:
+            # If there is no row that satisfies FPR <= des_fpr, then we return the lowest possible FPR
+            results = results.loc[(results['TPR'] == results['TPR'].iloc[-1])]
+            results = results.sort_values('FPR')
+        else:
+            # If there is an entry that satisfies FPR <= des_fpr , then we apply the function of TPR * (1 - FPR)
+            # and sort for the function
+            best_fpr['function'] = best_fpr.apply(lambda row: row['TPR'] * (1 - row['FPR']), axis=1)
+            results = best_fpr.sort_values('function', ascending=False)
+            results = results.head(1)
+        print(f"Optimal Sensitivity to use: {results['Sensitivity'].iloc[0]}\n")
+        print(f"TPR:{results['TPR'].iloc[0]} , FPR: {results['FPR'].iloc[0]}")
+        return results['Sensitivity'].iloc[0]
     else:
-        # If there is an entry that satisfies FPR <= des_fpr , then we apply the function of TPR * (1 - FPR)
-        # and sort for the function
-        best_fpr['function'] = best_fpr.apply(lambda row: row['TPR'] * (1 - row['FPR']), axis=1)
-        results = best_fpr.sort_values('function', ascending=False)
-        results = results.head(1)
-    print(f"Optimal Sensitivity to use: {results['Sensitivity'].iloc[0]}\n")
-    print(f"TPR:{results['TPR'].iloc[0]} , FPR: {results['FPR'].iloc[0]}")
-else:
-    print("No values match desired metrics")
+        print("No values match desired metrics, Please use default sensitivity")
+        return None
 ```
