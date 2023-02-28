@@ -141,14 +141,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Setting up AnomalyDetectionClient
-    config = oci.config.from_file(args.config_path)
+    config = oci.config.from_file("~/.oci/config")
     ad_client = AnomalyDetectionClient(config)
 
     # Read input dataset into DataFrame
     label_df = pd.read_csv(args.dataset_path)
 
-<<<<<<< HEAD
-    setup(args.des_tpr, args.des_fpr, label_df, ad_client, args.window_size)
-=======
     find_best_sensitivity(args.des_tpr, args.des_fpr, label_df, ad_client, args.window_size)
->>>>>>> 9fd8d8e (Address PR comments)
