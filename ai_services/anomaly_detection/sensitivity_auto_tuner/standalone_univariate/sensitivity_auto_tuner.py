@@ -15,7 +15,7 @@ def get_inference_results(label_df: pd.DataFrame,
                           window_size: int,
                           sensitivity: float,
                           ad_client: AnomalyDetectionClient,
-                          request: UnivariateInlineSignalRequestData):
+                          request: UnivariateInlineSignalRequestData) -> dict:
     univariate_model_training_request_details = UnivariateModelTrainingRequestDetails(window_size=window_size)
     univariate_iw_request = InlineUnivariateInferenceWorkflowRequestDetails(
         are_all_data_points_required=True,
@@ -26,6 +26,7 @@ def get_inference_results(label_df: pd.DataFrame,
 
     detect_response = ad_client.univariate_inference_workflow_request(univariate_iw_request)
 
+    window_size = detect_response.data.training_result_details.signal_result_details[0].window_size
     anomaly_data = detect_response.data.detection_results
     ret = pd.DataFrame(
         columns=["timestamp", "signalname", "anomaly_score", "actual_value", "estimated_value", "is_anomaly"])
@@ -66,7 +67,7 @@ def get_inference_results(label_df: pd.DataFrame,
 
 def tune_sensitivity(results: pd.DataFrame,
                      des_tpr: float,
-                     des_fpr: float):
+                     des_fpr: float) -> float:
     # Sort by highest TPR
     results = results.sort_values('TPR', ascending=False)
     # DF with the rows that have TPR >= des_tpr
@@ -87,15 +88,17 @@ def tune_sensitivity(results: pd.DataFrame,
             results = results.head(1)
         print(f"Optimal Sensitivity to use: {results['Sensitivity'].iloc[0]}\n")
         print(f"TPR:{results['TPR'].iloc[0]} , FPR: {results['FPR'].iloc[0]}")
+        return results['Sensitivity'].iloc[0]
     else:
-        print("No values match desired metrics")
+        print("No values match desired metrics, Please use default sensitivity")
+        return None
 
 
-def setup(des_tpr: float,
+def find_best_sensitivity(des_tpr: float,
           des_fpr: float,
           label_df: pd.DataFrame,
           ad_client: AnomalyDetectionClient,
-          window_size: int):
+          window_size: int) -> float:
 
     # Generate sensitivity samples
     sensitivity_samples = np.arange(0, 1, 0.01)
@@ -125,7 +128,7 @@ def setup(des_tpr: float,
 
     total_end_time = time.time()
     print(f"Total time taken: {total_end_time - total_start_time}")
-    tune_sensitivity(results, des_tpr, des_fpr)
+    return tune_sensitivity(results, des_tpr, des_fpr)
 
 
 if __name__ == "__main__":
@@ -133,7 +136,7 @@ if __name__ == "__main__":
     parser.add_argument('--des_tpr', type=float, default=0.80)
     parser.add_argument('--des_fpr', type=float, default=0.15)
     parser.add_argument('--dataset_path', type=str, default='~/')
-    parser.add_argument('--window_size', type=int, default=10)
+    parser.add_argument('--window_size', type=int, default=None)
     parser.add_argument('--config_path', type=str, default='~/.oci/config')
     args = parser.parse_args()
 
@@ -144,4 +147,8 @@ if __name__ == "__main__":
     # Read input dataset into DataFrame
     label_df = pd.read_csv(args.dataset_path)
 
+<<<<<<< HEAD
     setup(args.des_tpr, args.des_fpr, label_df, ad_client, args.window_size)
+=======
+    find_best_sensitivity(args.des_tpr, args.des_fpr, label_df, ad_client, args.window_size)
+>>>>>>> 9fd8d8e (Address PR comments)

@@ -17,10 +17,10 @@ Users can use this tool on a labeled dataset and obtain the optimal sensitivity 
 The success metrics (TPR and FPR) are calculated by comparing predicted labels against actual labels. Hence, this tool has the following dataset format requirements:
 
 *   **timestamp**: ISO-160 format with monotonically increasing and de-duplicated timestamp
-*   **value**: Numerical column with
+*   **value**: Numerical column 
 *   **anomaly**: Values labeled as 0(non-anomalous) / 1(anomalous)
 
-Users can use the open-source [TagAnomaly](https://github.com/microsoft/TagAnomaly) tool to annotate the dataset. We have an instance of this tool hosted at [http://100.73.92.203:3838/](http://100.73.92.203:3838/). Following is an example of a compatible dataset. Users can also edit the script in case they need to use different column names for their specific use case.  
+Users can use the open-source [TagAnomaly](https://github.com/microsoft/TagAnomaly) tool to annotate the dataset. We have an instance of this tool hosted at [http://100.73.92.203:3838/](http://100.73.92.203:3838/). Following is an example of a compatible dataset. Users can also edit the script in case they need to use different column names for their specific use case.  Once anomalies are tagged using TagAnomaly tool, users will need to add the anomaly column to the dataset as mentioned above.
 
 
 ### Usage:
@@ -39,7 +39,7 @@ The script supports following params:
 |  \--dataset\_path|  Path to the labeled dataset  | ~/input.csv            |
 | \--des\_tpr    |  Desired True Positive Rate   |        0.80      |
 |  \--des\_fpr   |   Desired False Positive Rate  |         0.15     |
-| \--window\_size    |   Window size required for making the inference call |     10          |
+| \--window\_size    |   Window size required for making the inference call |     None          |
 |  \--config\_path   | Path to the user's OCI config    |          ~/.oci/config     |
 
 
