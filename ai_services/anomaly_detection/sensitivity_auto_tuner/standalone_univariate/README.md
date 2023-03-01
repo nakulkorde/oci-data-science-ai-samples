@@ -26,7 +26,8 @@ Users can use the open-source [TagAnomaly](https://github.com/microsoft/TagAnoma
 ### Usage:
 
 1.  Create a python virtual environment
-2.  Install the requirements.txt
+2.  Install the requirements.txt by running ```python
+pip install -r requirements.txt```
 3.  Clone the notebook in your environment
 4.  Run the script and provide the required parameters  
       
