@@ -101,7 +101,7 @@ def find_best_sensitivity(des_tpr: float,
                           ad_client: AnomalyDetectionClient,
                           model_id) -> float:
     # Generate sensitivity samples
-    sensitivity_samples = np.arange(0.1, 1, 0.01)
+    sensitivity_samples = np.arange(0.0, 1, 0.01)
 
     # Prepare inline request data
     signal_names = ['value']
